@@ -55,17 +55,51 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     
     
-class Client(models.Moedl):
-    code= models.UUIDField()
-    nom = models.CharField(max_length=50)
-    prenom = models.CharField(max_length=50)
-    email = models.EmailField(max_length=50,unique=True)
-    adresse = models.CharField(max_length=50)
-    entreprise = models.CharField(max_length=50)
-    created_at = models.DateTimeField(max_length=50)
-    created_by = models.CharField(max_length=50)
-     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+
+class Client(models.Model):
+    STATUT_CHOICES = [
+        ('prospect', 'Prospect'),
+        ('actif', 'Actif'),
+        ('inactif', 'Inactif'),
+        ('fidele', 'Fidèle'),
+    ]
+    code = models.CharField(max_length=20, unique=True, blank=True)
+    nom = models.CharField(max_length=100)
+    prenom = models.CharField(max_length=100, blank=True, default='')
+    email = models.EmailField(blank=True, default='')
+    telephone = models.CharField(max_length=20, blank=True, default='')
+    adresse = models.TextField(blank=True, default='')
+    ville = models.CharField(max_length=100, blank=True, default='')
+    # Statut calculé automatiquement par le système
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='prospect')
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
+    responsable = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='clients'
+    )
+    notes = models.TextField(blank=True, default='')
+
+    class Meta:
+        verbose_name = 'Client'
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"{self.nom} {self.prenom}"
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            import random, string
+            self.code = 'CLI-' + ''.join(random.choices(string.digits, k=6))
+        update_fields = kwargs.get('update_fields')
+        if update_fields is None or 'statut' in update_fields:
+            self.statut = self._calculer_statut()
+        super().save(*args, **kwargs)
+
+    def _calculer_statut(self):
+        
+            return self.statut or 'prospect'
+    
     
         
             
