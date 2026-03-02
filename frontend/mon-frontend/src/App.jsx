@@ -1,7 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth, AuthProvider } from './context/AuthContext'
-import LoginPage    from './pages/loginpage'
-import RegisterPage from './pages/registerpage'
+import LoginPage     from './pages/LoginPage'
+import RegisterPage  from './pages/RegisterPage'
+import Layout        from './components/layout'        // ← ajouter
+import DashboardPage from './pages/Dashboardpage'      // ← ajouter
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -23,9 +25,24 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
+
+        {/* Pages publiques */}
         <Route path="/login"    element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-        <Route path="*"         element={<Navigate to="/login" />} />
+
+        {/* Pages protégées — TOUTES dans Layout */}
+        {/* Layout contient la sidebar + le header */}
+        {/* Les pages s'affichent dans <Outlet /> de Layout */}
+        <Route path="/" element={<Layout />}>
+
+          {/* index = affiché quand l'URL est exactement "/" */}
+          <Route index element={<DashboardPage />} />
+
+        </Route>
+
+        {/* URL inconnue → login */}
+        <Route path="*" element={<Navigate to="/login" />} />
+
       </Routes>
     </AuthProvider>
   )
