@@ -49,6 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active  = models.BooleanField(default=True)
     is_staff   = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
 
     objects = UserManager()
 
@@ -65,9 +66,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.first_name} {self.last_name}"
 
 
-# ══════════════════════════════════════════════════════════════
+
 #  CLIENT
-# ══════════════════════════════════════════════════════════════
+
 
 class Client(models.Model):
     STATUT_CHOICES = [
@@ -118,10 +119,10 @@ class Client(models.Model):
         return self.interactions.count()
 
 
-# ══════════════════════════════════════════════════════════════
+
 #  INTERACTION
-#  Chaque contact avec un client : appel, email, réunion...
-# ══════════════════════════════════════════════════════════════
+#  Chaque contact avec un client : appel, email, réunion... etc
+
 
 class Interaction(models.Model):
     TYPE_CHOICES = [
@@ -181,6 +182,10 @@ class RendezVous(models.Model):
 
     # True quand le rappel a déjà été envoyé — évite les doublons
     notification_envoyee = models.BooleanField(default=False)
+
+    # Token unique pour que le client confirme son RDV par email (sans connexion)
+    token_confirmation = models.CharField(max_length=64, blank=True, default='')
+    confirme_le        = models.DateTimeField(null=True, blank=True)
 
     created_at   = models.DateTimeField(auto_now_add=True)
 

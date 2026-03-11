@@ -48,7 +48,7 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await register(form)
-      toast.success('Compte créé ! Bienvenue 🎉')
+      toast.success('Compte créé avec succès ! Bienvenue ')
       navigate('/')
     } catch (err) {
       const errors = err.response?.data
@@ -80,8 +80,9 @@ export default function RegisterPage() {
           DROITE — Formulaire
           Fond gris clair pour différencier visuellement les deux côtés
       ═══════════════════════════ */}
-      <div className="flex-1 flex flex-col justify-center px-12 py-8 bg-gray-50 overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center justify-center px-12 py-8 bg-gray-50 overflow-y-auto">
 
+        <div className="w-full max-w-sm">
         {/* Nom de l'application */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-blue-600">SuiviClient</h2>
@@ -97,7 +98,7 @@ export default function RegisterPage() {
         </p>
 
         {/* Formulaire */}
-        <form onSubmit={submit} className="space-y-4 max-w-sm">
+        <form onSubmit={submit} className="space-y-4">
 
           {/* Prénom + Nom côte à côte */}
           <div className="grid grid-cols-2 gap-3">
@@ -217,6 +218,7 @@ export default function RegisterPage() {
           </p>
 
         </form>
+        </div>
       </div>
     </div>
   )
